@@ -117,7 +117,7 @@ export function ensureSeedExample() {
       codeCss: AVATAR_GROUP_SEED.codeCss,
       codeJs: AVATAR_GROUP_SEED.codeJs,
     })
-  } else if (list.length === 0) {
+  } else {
     addExample(AVATAR_GROUP_SEED)
   }
 

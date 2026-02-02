@@ -4,7 +4,7 @@ import { useSearchParams, Link } from 'react-router-dom'
 import { Card, Typography, Space, Button } from 'antd'
 import { LinkOutlined } from '@ant-design/icons'
 import { getExamples, ensureSeedExample } from '../data/store'
-import { DEFAULT_CATEGORIES } from '../constants/categories'
+import { DEFAULT_CATEGORIES, DEFAULT_CATEGORY, ONLINE_INSPIRATION_TITLES } from '../constants/categories'
 import LivePreview from '../components/LivePreview'
 import { BubbleBackground } from '../components/animate-ui/components/backgrounds/bubble'
 import { GravityStarsBackground } from '../components/animate-ui/components/backgrounds/gravity-stars'
@@ -47,7 +47,7 @@ function saveTileOrder(orders) {
 export default function ListPage() {
   const [searchParams] = useSearchParams()
   const categoryFromUrl = searchParams.get('category')
-  const categoryFilter = categoryFromUrl && DEFAULT_CATEGORIES.includes(categoryFromUrl) ? categoryFromUrl : 'all'
+  const categoryFilter = categoryFromUrl && DEFAULT_CATEGORIES.includes(categoryFromUrl) ? categoryFromUrl : DEFAULT_CATEGORY
   const categorySubtitle =
     categoryFilter === 'all' ? 'Online Inspirations' : categoryFilter
   const [examples, setExamples] = useState(() => getExamples())
@@ -86,11 +86,8 @@ export default function ListPage() {
 
   const filtered = useMemo(() => {
     if (categoryFilter === 'all') {
-      return examples.filter(
-        (ex) =>
-          ex.category !== 'Text effect' &&
-          ex.category !== 'Background effect' &&
-          ex.category !== 'Button interactions'
+      return examples.filter((ex) =>
+        ONLINE_INSPIRATION_TITLES.includes(ex.title?.trim() ?? '')
       )
     }
     return examples.filter((ex) => ex.category === categoryFilter)

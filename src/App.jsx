@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Link, useSearchParams } from 'react-route
 import { ThemeProvider } from 'next-themes'
 import { ConfigProvider } from 'antd'
 import { Globe, Type, Layers, MousePointer2 } from 'lucide-react'
-import { DEFAULT_CATEGORIES } from './constants/categories'
+import { DEFAULT_CATEGORIES, DEFAULT_CATEGORY } from './constants/categories'
 import { Dock, DockIcon } from './components/ui/dock'
 import ListPage from './pages/ListPage'
 import ExampleDetailPage from './pages/ExampleDetailPage'
@@ -34,6 +34,9 @@ function loadCategoryOrder() {
   }
 }
 
+// Match Vite base (e.g. /repo-name/ on GitHub Pages); Router expects no trailing slash
+const routerBasename = (import.meta.env.BASE_URL || '/').replace(/\/$/, '') || '/'
+
 const theme = {
   token: {
     borderRadiusLG: 16,
@@ -46,7 +49,7 @@ function AppLayout() {
   const [categoryOrder, setCategoryOrder] = useState(loadCategoryOrder)
 
   const current =
-    categoryFromUrl && DEFAULT_CATEGORIES.includes(categoryFromUrl) ? categoryFromUrl : 'all'
+    categoryFromUrl && DEFAULT_CATEGORIES.includes(categoryFromUrl) ? categoryFromUrl : DEFAULT_CATEGORY
 
   useEffect(() => {
     localStorage.setItem(NAV_ORDER_KEY, JSON.stringify(categoryOrder))
@@ -70,7 +73,9 @@ function AppLayout() {
   return (
     <div className="app-layout">
       <header className="app-header">
-        <span className="app-header-title">Charlotte's animation playground</span>
+        <Link to={`/?category=${encodeURIComponent(DEFAULT_CATEGORY)}`} className="app-header-title">
+          Charlotte's animation playground
+        </Link>
       </header>
       <div className="app-body">
         <main className="app-main">
@@ -95,7 +100,7 @@ function AppLayout() {
                 <div className="app-dock-icon-inner">
                   <span className="app-dock-label">{label}</span>
                   <Link
-                    to={value === 'all' ? '/' : `/?category=${encodeURIComponent(value)}`}
+                    to={value === 'all' ? `/?category=all` : `/?category=${encodeURIComponent(value)}`}
                     title={label}
                     aria-label={label}
                     className="app-dock-link"
@@ -116,7 +121,7 @@ export default function App() {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <ConfigProvider theme={theme}>
-        <BrowserRouter>
+        <BrowserRouter basename={routerBasename}>
           <AppLayout />
         </BrowserRouter>
       </ConfigProvider>
